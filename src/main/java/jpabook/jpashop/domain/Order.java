@@ -1,0 +1,57 @@
+package jpabook.jpashop.domain;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name="orders")
+@Getter @Setter
+public class Order {
+
+    @Id @GeneratedValue
+    @Column(name="order_id")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY) // 양방향 연관관계
+    @JoinColumn(name="member_id")
+    private Member member;
+
+    @OneToMany(mappedBy = "order") //OrderItem 클래스의 order 가 연관관계의 주인
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "delevery_id")
+    private Delivery delivery;
+
+    private LocalDateTime orderDate; //주문시간
+
+    @Enumerated(EnumType.STRING) //EnumType.ORDINARY 가 default인데, 이 경우 필드값을 숫자로 카운트 함.
+                                 //필드가 추가되었을 때 오류가 생길 수 있다.
+                                 //반드시 EnumType.STRING 으로 지정할 것
+    private OrderStatus status; //주문상태(ORDER, CANCEL)
+
+
+    //== 연관관계 편의 메서드==//
+    // 양방향 연관관계에서 세팅.
+    // 양쪽에서 세팅해야 할 값을 원자적으로 한 메서드에서 세팅할 수 있다.
+    // 이 연관관계 메서드는 주로 데이터를 조작하는 쪽에 선언해주는 것이 좋다.
+    public void setMember(Member member){
+        this.member = member;
+        member.getOrders().add(this);
+    }
+
+    public void addOrderItem(OrderItem orderItem){
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public void setDelivery(Delivery delivery){
+        this.delivery = delivery;
+        delivery.setOrder(this);
+    }
+}
