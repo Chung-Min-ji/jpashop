@@ -27,8 +27,8 @@ public class OrderRepository {
     }
 
     /**
-     * JPA Criteria
-     * JPA 표준 스펙이지만, 실무에서 사용하기에 너무 복잡하다. -> Querydsl 로 해결
+     * 주문 검색 기능.
+     * JPA Criteria : JPA 표준 스펙이지만, 실무에서 사용하기에 너무 복잡하다. -> Querydsl 로 해결
      */
     public List<Order> findAllByCriteria(OrderSearch orderSearch){
 
